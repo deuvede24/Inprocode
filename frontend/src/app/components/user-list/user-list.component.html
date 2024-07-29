@@ -1,0 +1,12 @@
+<div>
+    <div @if(users.length> 0)>{
+        <ul>
+            @for (user of users; track $user.id) {
+            <li>{{ user.username }} - {{ user.email }}</li>
+            }
+        </ul>}
+    </div>
+    @else {
+    <p>No users found.</p>
+    }
+</div>
