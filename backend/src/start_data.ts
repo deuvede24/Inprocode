@@ -1,52 +1,96 @@
+// backend/src/start_data.ts
+import bcrypt from 'bcrypt';
 import User from './models/userModel';
-import Book from './models/recipeModel';
+import Recipe from './models/recipeModel';
+import Ingredient from './models/ingredientModel';
+import RecipeIngredient from './models/recipeIngredientModel';
+import Comment from './models/commentModel';
+import Favorite from './models/favoriteModel';
 
-const insertInitialUserData = async () => {
+const insertInitialData = async () => {
+  const saltRounds = Number(process.env.BCRYPT_SALT);
+
   const userData = [
     {
-      email: 'ismael.academy@gmail.com',
-      password: '$2b$10$tXrqo7VdSPCLAsIUhrVsYejYeMt9FLo9J4OchgCKwuDvpeDK6Xf1q', //pass: ismael123
-      name: 'Ismael',
-      roles: ['user']
-    }, 
-    {
       email: 'laura@hotmail.com',
-      password: '$2b$10$tXrqo7VdSPCLAsIUhrVsYejYeMt9FLo9J4OchgCKwuDvpeDK6Xf1q', //pass: ismael123
-      name: 'Laura',
-      roles: ['user']
+      password: await bcrypt.hash('password1', saltRounds),
+      username: 'Laura',
+      role: 'user' as 'user',
     },
     {
       email: 'maria@hotmail.com',
-      password: '$2b$10$tXrqo7VdSPCLAsIUhrVsYejYeMt9FLo9J4OchgCKwuDvpeDK6Xf1q', //pass: ismael123
-      name: 'Maria',
-      surname: 'kale',
-      roles: ['mod', 'admin']
+      password: await bcrypt.hash('password2', saltRounds),
+      username: 'Maria',
+      role: 'user' as 'user',
     },
     {
-      email: 'mod@hotmail.com',
-      password: '$2b$10$tXrqo7VdSPCLAsIUhrVsYejYeMt9FLo9J4OchgCKwuDvpeDK6Xf1q', //pass: ismael123
-      name: 'Moderador',
-      surname: 'kale',
-      roles: ['admin']
+      email: 'kale@hotmail.com',
+      password: await bcrypt.hash('password3', saltRounds),
+      username: 'Kale',
+      role: 'admin' as 'admin',
     },
     {
-      email: 'admin@hotmail.com',
-      password: '$2b$10$tXrqo7VdSPCLAsIUhrVsYejYeMt9FLo9J4OchgCKwuDvpeDK6Xf1q', //pass: ismael123
-      name: 'Admin',
-      surname: 'kale',
-      roles: ['admin']
-    }
+      email: 'guest@hotmail.com',
+      password: await bcrypt.hash('password4', saltRounds),
+      username: 'Guest',
+      role: 'guest' as 'guest',
+    },
   ];
-  
-  await User.bulkCreate(userData, { ignoreDuplicates: true });
-  
-  const bookData = [
-    { title: 'TituloA', year: 1955 },
-    { title: 'TituloB', year: 1988 },
-    { title: 'TituloC', year: 1475, user_id: 2 }
-  ];
-  
-  await Book.bulkCreate(bookData, { ignoreDuplicates: true });
-}
 
-export { insertInitialUserData };
+  await User.bulkCreate(userData, { ignoreDuplicates: true });
+
+  const recipeData = [
+    {
+      name: 'Spaghetti Bolognese',
+      description: 'A classic Italian pasta dish',
+      steps: 'Cook pasta, prepare sauce, mix together',
+      category: 'Italian',
+      user_id: 1,
+      is_public: true,
+    },
+    {
+      name: 'Chicken Curry',
+      description: 'A spicy and savory chicken dish',
+      steps: 'Cook chicken, prepare curry sauce, mix together',
+      category: 'Indian',
+      user_id: 2,
+      is_public: true,
+    },
+  ];
+
+  await Recipe.bulkCreate(recipeData, { ignoreDuplicates: true });
+
+  const ingredientData = [
+    { name: 'Tomato' },
+    { name: 'Chicken' },
+    { name: 'Pasta' },
+    { name: 'Curry Powder' },
+  ];
+
+  await Ingredient.bulkCreate(ingredientData, { ignoreDuplicates: true });
+
+  const recipeIngredientData = [
+    { recipe_id: 1, ingredient_id: 1, quantity: '2 cups' },
+    { recipe_id: 1, ingredient_id: 3, quantity: '200g' },
+    { recipe_id: 2, ingredient_id: 2, quantity: '500g' },
+    { recipe_id: 2, ingredient_id: 4, quantity: '3 tbsp' },
+  ];
+
+  await RecipeIngredient.bulkCreate(recipeIngredientData, { ignoreDuplicates: true });
+
+  const commentData = [
+    { content: 'Delicious recipe!', user_id: 1, recipe_id: 1 },
+    { content: 'I loved it!', user_id: 2, recipe_id: 2 },
+  ];
+
+  await Comment.bulkCreate(commentData, { ignoreDuplicates: true });
+
+  const favoriteData = [
+    { user_id: 1, recipe_id: 2 },
+    { user_id: 2, recipe_id: 1 },
+  ];
+
+  await Favorite.bulkCreate(favoriteData, { ignoreDuplicates: true });
+};
+
+export { insertInitialData };

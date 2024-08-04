@@ -4,31 +4,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = require("./db");
-const start_data_1 = require("./start_data");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
-const bookRoutes_1 = __importDefault(require("./routes/bookRoutes"));
-const testRoutes_1 = __importDefault(require("./routes/testRoutes"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const cors_1 = __importDefault(require("cors"));
+const recipeRoutes_1 = __importDefault(require("./routes/recipeRoutes"));
+const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
+const favoriteRoutes_1 = __importDefault(require("./routes/favoriteRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.use((0, cors_1.default)({
     credentials: true,
-    origin: process.env.CLIENT_URL
+    origin: process.env.CLIENT_URL,
 }));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-await (0, db_1.testConnection)();
-await (0, start_data_1.insertInitialUserData)();
 app.use('/auth', authRoutes_1.default);
-app.use('/user', userRoutes_1.default);
-app.use('/book', bookRoutes_1.default);
-app.use('/test', testRoutes_1.default);
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-});
+app.use('/users', userRoutes_1.default);
+app.use('/recipes', recipeRoutes_1.default);
+app.use('/comments', commentRoutes_1.default);
+app.use('/favorites', favoriteRoutes_1.default);
+const startServer = async () => {
+    try {
+        await (0, db_1.testConnection)();
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    }
+    catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+};
+startServer();

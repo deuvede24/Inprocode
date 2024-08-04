@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/auth', authRoutes);
+app.use('/auth', authRoutes); // Asegúrate de que esta línea está presente
 app.use('/users', userRoutes);
 app.use('/recipes', recipeRoutes);
 app.use('/comments', commentRoutes);
@@ -41,5 +41,7 @@ const startServer = async () => {
 };
 
 startServer();
+
+
 
 

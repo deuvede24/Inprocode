@@ -1,16 +1,17 @@
 import { Router } from 'express';
+import { register, login, logout, forgotPassword, changePassword } from '../controllers/authController';
+import { registerValidator, loginValidator, forgotPasswordValidator, changePasswordValidator } from '../validations/authValidation';
 
 const router = Router();
 
-// Aquí defines tus rutas de autenticación
-router.post('/login', (req, res) => {
-  // Lógica de login
-  res.send('Login');
-});
-
-router.post('/register', (req, res) => {
-  // Lógica de registro
-  res.send('Register');
-});
+router.post('/register', registerValidator, register);
+router.post('/login', loginValidator, login);
+router.post('/forgot-password', forgotPasswordValidator, forgotPassword);
+router.post('/change-password', changePasswordValidator, changePassword);
+router.get('/logout', logout);
 
 export default router;
+
+
+
+
