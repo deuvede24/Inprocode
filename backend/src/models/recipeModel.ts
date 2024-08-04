@@ -1,22 +1,12 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../db';
+import { DataTypes } from 'sequelize';
+import {sequelize} from '../db';
 import User from './userModel';
 
-class Recipe extends Model {
-  public id_recipe!: number;
-  public name!: string;
-  public description!: string;
-  public ingredients!: string;
-  public steps!: string;
-  public category!: string;
-  public user_id!: number;
-}
-
-Recipe.init({
+const Recipe = sequelize.define('Recipe', {
   id_recipe: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
+    autoIncrement: true,
   },
   name: {
     type: DataTypes.STRING(100),
@@ -39,18 +29,20 @@ Recipe.init({
     allowNull: false,
   },
   user_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
     references: {
       model: User,
       key: 'id_user',
     },
   },
 }, {
-  sequelize,
-  modelName: 'Recipe',
-  tableName: 'recipes',
-  timestamps: false,
+  timestamps: true,
+  updatedAt: 'updated_at',
+  createdAt: 'created_at'
 });
 
-export default Recipe;
+User.hasMany(Recipe, { foreignKey: 'user_id' });
+Recipe.belongsTo(User, { foreignKey: 'user_id' });
 
+export default Recipe;

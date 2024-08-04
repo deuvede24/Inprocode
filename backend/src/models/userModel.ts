@@ -1,21 +1,11 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../db';
+import { DataTypes } from 'sequelize';
+import {sequelize} from '../db';
 
-class User extends Model {
-  public id_user!: number;
-  public username!: string;
-  public email!: string;
-  public password!: string;
-  public role!: 'admin' | 'user' | 'guest';
-  public preference!: 'original' | 'vegana' | 'vegetariana';
-  public location!: string;
-}
-
-User.init({
+const User = sequelize.define('User', {
   id_user: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
+    autoIncrement: true,
   },
   username: {
     type: DataTypes.STRING(40),
@@ -43,10 +33,11 @@ User.init({
     allowNull: false,
   },
 }, {
-  sequelize,
-  modelName: 'User',
-  tableName: 'users',
-  timestamps: false,
+  indexes: [{ unique: true, fields: ['email'] }],
+  timestamps: true,
+  updatedAt: 'updated_at',
+  createdAt: 'created_at'
 });
 
 export default User;
+

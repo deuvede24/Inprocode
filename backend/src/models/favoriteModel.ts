@@ -1,44 +1,40 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../db';
+import { DataTypes } from 'sequelize';
+import {sequelize} from '../db';
 import User from './userModel';
 import Recipe from './recipeModel';
 
-class Favorite extends Model {
-  public id_favorite!: number;
-  public user_id!: number;
-  public recipe_id!: number;
-  public created_at!: Date;
-}
-
-Favorite.init({
+const Favorite = sequelize.define('Favorite', {
   id_favorite: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
+    autoIncrement: true,
   },
   user_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
     references: {
       model: User,
       key: 'id_user',
     },
   },
   recipe_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
     references: {
       model: Recipe,
       key: 'id_recipe',
     },
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
 }, {
-  sequelize,
-  modelName: 'Favorite',
-  tableName: 'favorites',
-  timestamps: false,
+  timestamps: true,
+  updatedAt: 'created_at',
+  createdAt: 'created_at'
 });
 
+User.hasMany(Favorite, { foreignKey: 'user_id' });
+Favorite.belongsTo(User, { foreignKey: 'user_id' });
+Recipe.hasMany(Favorite, { foreignKey: 'recipe_id' });
+Favorite.belongsTo(Recipe, { foreignKey: 'recipe_id' });
+
 export default Favorite;
+

@@ -1,49 +1,44 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../db';
+import { DataTypes } from 'sequelize';
+import {sequelize} from '../db';
 import User from './userModel';
 import Recipe from './recipeModel';
 
-class Comment extends Model {
-  public id_comment!: number;
-  public content!: string;
-  public user_id!: number;
-  public recipe_id!: number;
-  public created_at!: Date;
-}
-
-Comment.init({
+const Comment = sequelize.define('Comment', {
   id_comment: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
+    autoIncrement: true,
   },
   content: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
   user_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
     references: {
       model: User,
       key: 'id_user',
     },
   },
   recipe_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
     references: {
       model: Recipe,
       key: 'id_recipe',
     },
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
 }, {
-  sequelize,
-  modelName: 'Comment',
-  tableName: 'comments',
-  timestamps: false,
+  timestamps: true,
+  updatedAt: 'created_at',
+  createdAt: 'created_at'
 });
 
+User.hasMany(Comment, { foreignKey: 'user_id' });
+Comment.belongsTo(User, { foreignKey: 'user_id' });
+Recipe.hasMany(Comment, { foreignKey: 'recipe_id' });
+Comment.belongsTo(Recipe, { foreignKey: 'recipe_id' });
+
 export default Comment;
+
